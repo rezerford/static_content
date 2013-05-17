@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="component" version="3.0" method="upgrade" >
+	<name>COM_STATICCONTENT</name>
+	<creationDate>April 2013</creationDate>
+	<author>JoomPlace Team</author>
+	<copyright>(C) JoomPlace, www.joomplace.com</copyright>
+	<license>GNU/GPL http://www.gnu.org/copyleft/gpl.html</license>
+	<authorEmail>support@joomplace.com</authorEmail>
+	<authorUrl>www.joomplace.com</authorUrl>
+	<version>0.1</version>
+	<description>This component manages articles as html files</description>
+	
+	<scriptfile>script.php</scriptfile>
+	<install> 
+        <sql>
+            <file driver="mysql" charset="utf8">sql/install.mysql.utf8.sql</file>
+        </sql>
+    </install>
+		
+    <uninstall> 
+        <sql>
+            <file driver="mysql" charset="utf8">sql/uninstall.mysql.utf8.sql</file>
+        </sql>
+    </uninstall>
+		
+    <update> 
+        <schemas>
+            <schemapath type="mysql">sql/updates/mysql</schemapath>
+        </schemas>
+    </update>
+	
+	<files folder="site">
+
+	</files>
+	<administration>
+	<menu>COM_STATICCONTENT</menu>
+	<languages folder="admin">
+			<language tag="en-GB">language/en-GB.com_staticcontent.sys.ini</language>
+			<language tag="en-GB">language/en-GB.com_staticcontent.ini</language>
+	</languages>
+	<files folder="admin">
+		<filename>index.html</filename>
+		<filename>staticcontent.php</filename>
+		<filename>controller.php</filename>
+		
+		<folder>assets</folder>
+		<folder>controllers</folder>
+		<folder>helpers</folder>
+		<folder>models</folder>
+		<folder>views</folder>
+		<folder>sql</folder>
+		<folder>language</folder>
+	</files>
+	</administration>
+</extension>

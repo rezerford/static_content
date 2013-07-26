@@ -480,7 +480,7 @@ class StaticcontentControllerSynchronize extends JControllerAdmin
 			$assets = $db->loadAssoc();
 			
 			$alias = str_replace(".html", "", basename($params['file']));
-			$title = ucfirst(str_replace("-", " ", $alias));
+			$title = $params['temp_index']->title;
 			
 			$data = new stdClass;
 			$data->id = '';
@@ -516,11 +516,35 @@ class StaticcontentControllerSynchronize extends JControllerAdmin
 			$db->insertObject("#__content", $data);
 			$article_id = $db->insertid();
 			
-			$javascript = '<script type="text/javascript">var file_data = {"article_id":"'.$article_id.'","publish_up":"'.$params['temp_index']->publish_up.'","publish_down":"'.$params['temp_index']->publish_down.'","metakey":"'.$params['temp_index']->metakey.'","metadesc":"'.$params['temp_index']->metadesc.'"}</script>';
+			$javascript = '<script type="text/javascript">var file_data = {"article_id":"'.$article_id.'", "title":"'.$title.'", "publish_up":"'.$params['temp_index']->publish_up.'","publish_down":"'.$params['temp_index']->publish_down.'","metakey":"'.$params['temp_index']->metakey.'","metadesc":"'.$params['temp_index']->metadesc.'"}</script>';
 			$content = $params['content']."\n".$javascript;
 			
 			JFile::write(JPATH_SITE. DIRECTORY_SEPARATOR ."static_content". DIRECTORY_SEPARATOR .$params['file'], $content);
 			
 			return $article_id;
+		}
+		
+		public function log2html(){
+			
+			$html_log = '<style>.table-striped tbody tr:nth-child(2n+1) td, .table-striped tbody tr:nth-child(2n+1) th {background-color: #F9F9F9;}.table th, .table td {border-top: 1px solid #DDDDDD;line-height: 18px;padding: 8px;text-align: left;vertical-align: top;}</style>';
+			$html_log .= $_REQUEST['html_log'];
+			$html_log = rawurldecode($html_log);
+			
+			$UserBrowser = '';
+			if (preg_match('/MSIE ([0-9].[0-9]{1,2})/', $_SERVER['HTTP_USER_AGENT'])) $UserBrowser = "IE";
+			header("Content-Type: text/html");
+			header('Expires: ' . gmdate('D, d M Y H:i:s') . ' GMT');
+			header("Content-Length: ".strlen($html_log)); 
+			if ($UserBrowser == 'IE') {
+				header("Content-Disposition: inline; filename=log_".date('d_m_Y').".html ");
+				header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
+				header('Pragma: public');
+			} else {
+				header("Content-Disposition: inline; filename=log_".date('d_m_Y').".html ");
+				header('Pragma: no-cache');
+			}
+			
+			echo $html_log;
+			die();
 		}
 }

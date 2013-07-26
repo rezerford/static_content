@@ -30,7 +30,7 @@
     </update>
 	
 	<files folder="site">
-
+		<filename>index.html</filename>
 	</files>
 	<administration>
 	<menu>COM_STATICCONTENT</menu>

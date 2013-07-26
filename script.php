@@ -34,7 +34,9 @@ class com_staticcontentInstallerScript
     function update($parent)
     {
 		$installer = new com_staticcontentInstallerScript();
-		$installer->syncStatic();
+		$installer->generateStatic();
+		//$installer = new com_staticcontentInstallerScript();
+		//$installer->syncStatic();
     }
 
 	function preflight($type, $parent) 
@@ -65,16 +67,15 @@ class com_staticcontentInstallerScript
 			JFolder::create( JPATH_ROOT . DS . 'static_content');
 		}
 		
-		require_once JPATH_BASE . '/components/com_content/models/articles.php';
-		$model = new ContentModelArticles();
-		$items = $model->getItems();
+		$db->setQuery("SELECT cont.*, cat.alias as category_title FROM #__content as cont LEFT JOIN #__categories as cat ON cat.id = cont.catid WHERE cat.extension='com_content' AND cont.state = 1");
+		$items = $db->loadObjectList();
 		
 		if(count($items)){
 			foreach($items as $item){
-				if($item->category_title == 'Uncategorised'){
+				if($item->category_title == 'uncategorised'){
 					$file = JPATH_SITE.DS.'static_content'.DS.$item->alias.'.html';
 				} else {
-					$category_dir = strtolower(str_replace(" ", "_", $item->category_title));
+					$category_dir = strtolower(str_replace("-", "_", $item->category_title));
 					if(!JFolder::exists(JPATH_SITE.DS.'static_content'.DS.$category_dir)){
 						JFolder::create(JPATH_SITE.DS.'static_content'.DS.$category_dir);
 					}
@@ -84,10 +85,11 @@ class com_staticcontentInstallerScript
 				
 				$file_data = array();
 				$file_data['article_id'] = $item->id;
+				$file_data['title'] = $item->title;
 				$file_data['publish_up'] = $item->publish_up;
 				$file_data['publish_down'] = $item->publish_down;
-				$file_data['metakey'] = $item->metakey;
-				$file_data['metadesc'] = $item->metadesc;
+				$file_data['metakey'] = @$item->metakey;
+				$file_data['metadesc'] = @$item->metadesc;
 				$javascript = '<script type="text/javascript">var file_data = '.json_encode($file_data).'</script>';
 				
 				$db->setQuery("SELECT `introtext`, `fulltext` FROM #__content WHERE `id` = '".$item->id."'");
@@ -127,7 +129,7 @@ class com_staticcontentInstallerScript
 	
 		$db = JFactory::getDBO();
 				
-		$path = ($item->category_title != 'Uncategorised') ? strtolower(str_replace(" ", "_", $item->category_title))."/" : "";
+		$path = ($item->category_title != 'uncategorised') ? strtolower(str_replace("-", "_", $item->category_title))."/" : "";
 		$query = $db->getQuery(true);
 		$query->insert("#__staticcontent_file_index")->set("`id` = '', `filename_full`=".$db->quote($item->alias).", `modified_date` = '".time()."', `article_id` = '".$item->id."', `path` = '".$path."'");		
 		if(!$db->setQuery($query)->query()) return false;

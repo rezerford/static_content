@@ -30,6 +30,27 @@ defined('_JEXEC') or die('Restricted Access');
 		float:right;
 	}
 </style>
+<script type="text/javascript">
+Joomla.submitbutton = function(task)
+	{
+		var form = document.adminForm;
+		// do field validation
+		if (task == 'synchronize.log2html'){
+			var log_text = document.getElementById("log_text");
+			var log = log_text.innerHTML;
+						
+			var log_win = window.open("", "log_win");
+			log_win.document.write("<form action='index.php?option=com_staticcontent&task=synchronize.log2html' method='post' name='adminForm' id='adminForm'><textarea name='html_log' id='html_log' style='visibility:hidden;'></textarea></form>");
+			
+			var html_log = log_win.document.getElementById("html_log");
+			html_log.value = encodeURIComponent(log);
+			
+			log_win.document.adminForm.submit();
+		} else {
+			Joomla.submitform(task);
+		}
+	}
+</script>
 <form action="<?php echo JRoute::_('index.php?option=com_staticcontent&view=synchronize'); ?>" method="post" name="adminForm" id="adminForm">
 	<?php if (!empty( $this->sidebar)) : ?>
 	<div id="j-sidebar-container" class="span2">
@@ -65,6 +86,7 @@ defined('_JEXEC') or die('Restricted Access');
 	<?php echo JHtml::_('form.token'); ?>
 	
     </div>
+	
 </form>
 <iframe src="" style="display:none " id="synch_frame">
 </iframe>
@@ -111,4 +133,3 @@ defined('_JEXEC') or die('Restricted Access');
 		}
 		//-->
 </script>
-		
